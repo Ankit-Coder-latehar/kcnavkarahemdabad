@@ -49,9 +49,8 @@ export default function TopBar({ activeCurrency, onCurrencyChange, onOpenSubscri
                       onCurrencyChange(curr);
                       setCurrencyOpen(false);
                     }}
-                    className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-[#b10607] hover:text-white transition ${
-                      activeCurrency === curr ? 'bg-gray-100 font-bold text-[#b10607]' : 'text-gray-700'
-                    }`}
+                    className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-[#b10607] hover:text-white transition ${activeCurrency === curr ? 'bg-gray-100 font-bold text-[#b10607]' : 'text-gray-700'
+                      }`}
                   >
                     {curr}
                   </button>
@@ -121,7 +120,7 @@ export default function TopBar({ activeCurrency, onCurrencyChange, onOpenSubscri
       {/* Award & Trust Banner */}
       <div className="bg-[#f8f8f8] border-t border-gray-200 py-1.5 text-center font-semibold text-gray-800 text-xs flex justify-center items-center gap-3">
         <span className="flex items-center gap-1">
-          <Award className="w-4 h-4 text-amber-600" /> Trusted Since 2017
+          <Award className="w-4 h-4 text-amber-600" /> Trusted Since 2011
         </span>
         <span className="text-gray-300">|</span>
         <span className="flex items-center gap-1">
