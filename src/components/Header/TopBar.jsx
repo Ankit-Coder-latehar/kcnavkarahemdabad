@@ -10,26 +10,34 @@ export default function TopBar({ activeCurrency, onCurrencyChange, onOpenSubscri
       <div className="w-full px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap justify-between items-center gap-2">
         {/* Left Side: Contact Numbers & Currency */}
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <Phone className="w-4 h-4 text-[#b10607]" />
             <span className="hidden sm:inline font-medium">For Inquiry:</span>
+            <a
+              href="https://api.whatsapp.com/send?phone=919327332114"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#b10607] font-semibold text-[#000000]"
+            >
+              +91 9327332114
+            </a>
+            <span className="text-gray-400">,</span>
+            <a
+              href="https://api.whatsapp.com/send?phone=918690695238"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#b10607] font-semibold text-[#000000]"
+            >
+              +91 8690695238
+            </a>
+            <span className="text-gray-400 font-medium hidden md:inline">|</span>
             <a
               href="https://api.whatsapp.com/send?phone=919712582172"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-[#b10607] font-semibold text-[#000000]"
+              className="hover:text-[#b10607] font-semibold text-[#000000] hidden lg:inline"
             >
               +91 9712582172
-            </a>
-            <span className="text-gray-400">,</span>
-            <span className="hidden md:inline font-medium">International:</span>
-            <a
-              href="https://api.whatsapp.com/send?phone=919824182172"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-[#b10607] font-semibold text-[#000000]"
-            >
-              +91 9824182172
             </a>
           </div>
 

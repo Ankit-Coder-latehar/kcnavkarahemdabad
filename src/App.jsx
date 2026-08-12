@@ -13,6 +13,7 @@ import SeoContent from './components/SEO/SeoContent';
 import Footer from './components/Footer/Footer';
 import AdminPanel from './components/Admin/AdminPanel';
 import AdminLoginModal from './components/Admin/AdminLoginModal';
+import HeroSection from './components/Hero/HeroSection';
 
 import { PRODUCTS } from './data/products';
 
@@ -316,6 +317,12 @@ export default function App() {
             onSelectCategory={setSelectedCategory}
             mobileNavOpen={mobileNavOpen}
             onToggleMobileNav={() => setMobileNavOpen(!mobileNavOpen)}
+          />
+
+          {/* Hero Section Banner */}
+          <HeroSection
+            onSelectCategory={setSelectedCategory}
+            onOpenSubscribe={() => setSubscribeModalOpen(true)}
           />
 
           {/* Breadcrumbs Banner */}

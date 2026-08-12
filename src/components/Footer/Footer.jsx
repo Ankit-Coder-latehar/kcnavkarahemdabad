@@ -61,18 +61,23 @@ export default function Footer({ onSelectCategory }) {
         {/* Col 4: Contact Info */}
         <div>
           <h4 className="font-extrabold text-white text-base uppercase tracking-wider mb-4 border-b border-gray-700 pb-2">
-            Contact Surat Market
+            Contact Us
           </h4>
           <ul className="space-y-3 text-gray-400 text-sm">
             <li className="flex items-start gap-2.5">
               <MapPin className="w-4.5 h-4.5 text-[#b10607] shrink-0 mt-0.5" />
-              <span>
-                Third Floor, Shop No.-2012, RRTM Market, Saroli Road, Surat, Gujarat - 395002, India
-              </span>
+              <div className="leading-relaxed">
+                <span className="font-semibold text-white block">Shop no. 20 Ground Floor</span>
+                <span>Sharanam estate - 4, opp. Ashima mill, near anupam cinema road, Khokra, Ahmedabad, Gujrat - 380021</span>
+              </div>
             </li>
-            <li className="flex items-center gap-2.5">
-              <Phone className="w-4.5 h-4.5 text-[#b10607] shrink-0" />
-              <span>+91 92657 12660 / +91 97125 82172</span>
+            <li className="flex items-start gap-2.5">
+              <Phone className="w-4.5 h-4.5 text-[#b10607] shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-0.5">
+                <a href="https://api.whatsapp.com/send?phone=919327332114" target="_blank" rel="noreferrer" className="hover:text-white transition">+91 93273 32114</a>
+                <a href="https://api.whatsapp.com/send?phone=918690695238" target="_blank" rel="noreferrer" className="hover:text-white transition">+91 86906 95238</a>
+                <a href="https://api.whatsapp.com/send?phone=919712582172" target="_blank" rel="noreferrer" className="hover:text-white transition">+91 97125 82172 / +91 92657 12660</a>
+              </div>
             </li>
             <li className="flex items-center gap-2.5">
               <Mail className="w-4.5 h-4.5 text-[#b10607] shrink-0" />

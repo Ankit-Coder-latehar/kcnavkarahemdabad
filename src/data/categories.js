@@ -170,16 +170,6 @@ export const CATEGORIES = [
       { name: "Girls Wear", url: "/girls-wear" },
       { name: "Boys Wear", url: "/boys-wear" }
     ]
-  },
-  {
-    id: "kitchen-products",
-    name: "Kitchen Products",
-    url: "/wholesale-kitchen-products",
-    subcategories: [
-      { name: "Crockery Items", url: "/crockery-items-wholesale" },
-      { name: "Stainless Steel Kitchen Items", url: "/wholesale-stainless-steel-kitchen-items" },
-      { name: "Home Essentials Products", url: "/home-essentials-products" }
-    ]
   }
 ];
 

@@ -19,7 +19,7 @@ export default function SeoContent() {
     },
     {
       q: "Are all products manufactured directly in Surat textile market?",
-      a: "Yes, KC Navkar is headquartered in RRTM Market, Saroli Road, Surat, Gujarat. We source directly from premier brand manufacturers to give you guaranteed lowest wholesale prices."
+      a: "Yes, KC Navkar is located at Shop no. 20 Ground Floor, Sharanam estate - 4, opp. Ashima mill, near anupam cinema road, Khokra, Ahmedabad, Gujrat - 380021. We source directly from premier brand manufacturers to give you guaranteed lowest wholesale prices."
     }
   ];
 
