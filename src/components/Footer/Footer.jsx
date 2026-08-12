@@ -76,7 +76,6 @@ export default function Footer({ onSelectCategory }) {
               <div className="flex flex-col gap-0.5">
                 <a href="https://api.whatsapp.com/send?phone=919327332114" target="_blank" rel="noreferrer" className="hover:text-white transition">+91 93273 32114</a>
                 <a href="https://api.whatsapp.com/send?phone=918690695238" target="_blank" rel="noreferrer" className="hover:text-white transition">+91 86906 95238</a>
-                <a href="https://api.whatsapp.com/send?phone=919712582172" target="_blank" rel="noreferrer" className="hover:text-white transition">+91 97125 82172 / +91 92657 12660</a>
               </div>
             </li>
             <li className="flex items-center gap-2.5">

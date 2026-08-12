@@ -198,7 +198,7 @@ export default function ProductDetailModal({
               </button>
 
               <a
-                href={`https://api.whatsapp.com/send?phone=919712582172&text=${whatsappMessage}`}
+                href={`https://api.whatsapp.com/send?phone=919327332114&text=${whatsappMessage}`}
                 target="_blank"
                 rel="noreferrer"
                 className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white py-3 rounded-md font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-md uppercase tracking-wider text-center"

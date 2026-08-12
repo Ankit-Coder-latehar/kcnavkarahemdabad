@@ -41,7 +41,7 @@ export default function CartDrawer({
       `Please confirm stock availability and share payment & shipping details. Thank you!`;
 
     const encodedMsg = encodeURIComponent(orderMessage);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=919712582172&text=${encodedMsg}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=919327332114&text=${encodedMsg}`;
 
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };

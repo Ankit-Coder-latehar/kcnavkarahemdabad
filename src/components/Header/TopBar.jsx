@@ -30,15 +30,6 @@ export default function TopBar({ activeCurrency, onCurrencyChange, onOpenSubscri
             >
               +91 8690695238
             </a>
-            <span className="text-gray-400 font-medium hidden md:inline">|</span>
-            <a
-              href="https://api.whatsapp.com/send?phone=919712582172"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-[#b10607] font-semibold text-[#000000] hidden lg:inline"
-            >
-              +91 9712582172
-            </a>
           </div>
 
           {/* Currency Dropdown */}
