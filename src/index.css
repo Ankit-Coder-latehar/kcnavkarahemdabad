@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+  body {
+    font-family: 'Lato', system-ui, -apple-system, sans-serif;
+    font-size: 0.95rem;
+    color: #333333;
+    background-color: #ffffff;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom KC Navkar Branding Theme */
+:root {
+  --brand-red: #b10607;
+  --brand-dark-red: #8b0405;
+  --brand-navy: #36454F;
+  --brand-purple: #8a3ca9;
+  --brand-green: #76b51b;
+}
+
+.bg-brand-red {
+  background-color: #b10607;
+}
+
+.text-brand-red {
+  color: #b10607;
+}
+
+.border-brand-red {
+  border-color: #b10607;
+}
+
+.bg-brand-navy {
+  background-color: #36454F;
+}
+
+.text-brand-navy {
+  color: #36454F;
+}
+
+.bg-brand-purple {
+  background-color: #8a3ca9;
+}
+
+.bg-brand-green {
+  background-color: #76b51b;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* Animations */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 25s linear infinite;
+}
