@@ -34,14 +34,29 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          const defaultMap = new Map(PRODUCTS.map((p) => [p.id, p]));
           const existingIds = new Set(parsed.map((p) => p.id));
+
+          // Merge: default fields first, then cached overrides on top
+          // - `...defaults` ensures new fields added to products.js appear for all products
+          // - `...p` restores all admin edits (title, price, image, etc.)
+          // - catalogPdf: prefer admin-saved value if the key exists in cache, else use default
+          const merged = parsed.map((p) => {
+            const defaults = defaultMap.get(p.id);
+            if (!defaults) return p;
+            return {
+              ...defaults,
+              ...p,
+              catalogPdf: 'catalogPdf' in p ? p.catalogPdf : defaults.catalogPdf
+            };
+          });
+
+          // Add any brand-new default products not yet in localStorage
           const missingDefaults = PRODUCTS.filter((p) => !existingIds.has(p.id));
-          if (missingDefaults.length > 0) {
-            const merged = [...missingDefaults, ...parsed];
-            localStorage.setItem('kcnavkar_products', JSON.stringify(merged));
-            return merged;
-          }
-          return parsed;
+          const final = [...missingDefaults, ...merged];
+
+          localStorage.setItem('kcnavkar_products', JSON.stringify(final));
+          return final;
         }
       }
     } catch (e) {
@@ -51,11 +66,18 @@ export default function App() {
   });
 
   // Save to localStorage when products change
+  // Note: base64-encoded catalogPdf values are stripped before saving (too large for localStorage).
+  // Only URL/path strings (e.g. /pdfs/sofiya-catalog.pdf) are persisted.
   useEffect(() => {
     try {
-      localStorage.setItem('kcnavkar_products', JSON.stringify(productsList));
+      const toSave = productsList.map((p) => ({
+        ...p,
+        catalogPdf: p.catalogPdf && p.catalogPdf.startsWith('data:') ? '' : (p.catalogPdf || '')
+      }));
+      localStorage.setItem('kcnavkar_products', JSON.stringify(toSave));
     } catch (e) {
       console.error('Failed to save products to localStorage', e);
+      alert('⚠️ Could not save changes to browser storage. Please use a PDF file path (e.g. /pdfs/sofiya-catalog.pdf) instead of uploading a PDF file directly.');
     }
   }, [productsList]);
 

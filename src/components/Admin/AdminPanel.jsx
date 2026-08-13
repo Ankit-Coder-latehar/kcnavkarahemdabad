@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { savePdfBlob, generatePdfKey, isIndexedDbRef, makeRef } from '../../utils/pdfStorage';
 import {
   Plus,
   Edit2,
@@ -14,7 +15,9 @@ import {
   X,
   UploadCloud,
   Upload,
-  Link
+  Link,
+  FileText,
+  Download
 } from 'lucide-react';
 import { FABRIC_OPTIONS, CURRENCY_RATES } from '../../data/products';
 import { CATEGORIES } from '../../data/categories';
@@ -35,6 +38,9 @@ export default function AdminPanel({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [imageUploadMode, setImageUploadMode] = useState('upload'); // 'upload' | 'url'
   const [uploadFileName, setUploadFileName] = useState('');
+  const [pdfFileName, setPdfFileName] = useState('');
+  const [pdfUploading, setPdfUploading] = useState(false);
+
 
   // Image Upload File Handler
   const handleImageFileChange = (e) => {
@@ -53,6 +59,43 @@ export default function AdminPanel({
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  // PDF Upload — stores file in IndexedDB, saves only a ref key in formData
+  const handlePdfFile = async (file) => {
+    if (!file || file.type !== 'application/pdf') {
+      alert('Please select a valid PDF file.');
+      return;
+    }
+    setPdfUploading(true);
+    setPdfFileName(file.name);
+    try {
+      const key = generatePdfKey();
+      await savePdfBlob(key, file);
+      setFormData((prev) => ({ ...prev, catalogPdf: makeRef(key) }));
+    } catch (err) {
+      console.error('Failed to save PDF to IndexedDB', err);
+      alert('Failed to save PDF. Please try again.');
+    } finally {
+      setPdfUploading(false);
+    }
+  };
+
+  const handlePdfFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) handlePdfFile(file);
+  };
+
+  const handlePdfDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handlePdfDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handlePdfFile(file);
   };
 
   const handleDragOver = (e) => {
@@ -94,6 +137,7 @@ export default function AdminPanel({
     margin: '50%',
     sizes: ['M', 'L', 'XL', 'XXL'],
     image: '',
+    catalogPdf: '',
     fastShip: true,
     inStock: true
   });
@@ -122,17 +166,21 @@ export default function AdminPanel({
       margin: '47%',
       sizes: ['M', 'L', 'XL', 'XXL'],
       image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80',
+      catalogPdf: '',
       fastShip: true,
       inStock: true
     });
     setEditingProduct(null);
+    setUploadFileName('');
     setIsFormOpen(true);
   };
 
   // Open Form for Editing Existing Product
   const handleOpenEditForm = (prod) => {
-    setFormData({ ...prod });
+    setFormData({ ...prod, catalogPdf: prod.catalogPdf || '' });
     setEditingProduct(prod);
+    setUploadFileName('');
+    setPdfFileName(isIndexedDbRef(prod.catalogPdf) ? '(PDF already uploaded)' : prod.catalogPdf || '');
     setIsFormOpen(true);
   };
 
@@ -766,6 +814,107 @@ export default function AdminPanel({
                   />
                   <span>In Stock</span>
                 </label>
+              </div>
+
+              {/* Catalog PDF — Upload via IndexedDB (no size limit) */}
+              <div className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50/40">
+                <label className="block text-xs font-extrabold text-gray-700 uppercase flex items-center gap-1.5 mb-3">
+                  <FileText className="w-3.5 h-3.5 text-[#8a3ca9]" /> Catalog PDF
+                  <span className="text-gray-400 font-medium normal-case text-[11px]">(optional)</span>
+                </label>
+
+                {/* Drop zone */}
+                <div
+                  onDragOver={handlePdfDragOver}
+                  onDrop={handlePdfDrop}
+                  className={`border-2 border-dashed rounded-lg p-5 text-center transition cursor-pointer relative ${
+                    formData.catalogPdf && isIndexedDbRef(formData.catalogPdf)
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-purple-300 hover:border-[#8a3ca9] bg-white hover:bg-purple-50/30'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePdfFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    disabled={pdfUploading}
+                  />
+                  <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
+                    {pdfUploading ? (
+                      <>
+                        <div className="w-10 h-10 rounded-full bg-purple-100 text-[#8a3ca9] flex items-center justify-center animate-pulse">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-bold text-[#8a3ca9]">Saving PDF to browser storage...</p>
+                      </>
+                    ) : formData.catalogPdf && isIndexedDbRef(formData.catalogPdf) ? (
+                      <>
+                        <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                          <CheckCircle className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-extrabold text-green-700">
+                          ✅ PDF Uploaded: <span className="text-green-900">{pdfFileName || 'PDF file stored'}</span>
+                        </p>
+                        <p className="text-[11px] text-green-600">Click or drop a new file to replace it</p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-10 h-10 rounded-full bg-purple-100 text-[#8a3ca9] flex items-center justify-center">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-bold text-gray-800">Click to browse PDF or drag &amp; drop here</p>
+                        <p className="text-[11px] text-gray-500">PDF files of any size — stored securely in browser</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Current PDF status */}
+                {formData.catalogPdf && isIndexedDbRef(formData.catalogPdf) && (
+                  <div className="mt-2 flex items-center justify-between bg-green-50 border border-green-200 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-green-600 shrink-0" />
+                      <span className="text-xs font-bold text-green-800">
+                        {pdfFileName || 'PDF stored'} — View/Download buttons will appear on product page
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { setFormData({ ...formData, catalogPdf: '' }); setPdfFileName(''); }}
+                      className="ml-2 px-2.5 py-1 text-xs font-bold text-red-600 hover:text-white hover:bg-red-600 border border-red-200 rounded transition flex items-center gap-1 shrink-0"
+                    >
+                      <X className="w-3 h-3" /> Remove
+                    </button>
+                  </div>
+                )}
+
+                {/* If there's a plain URL (e.g. /pdfs/sofiya-catalog.pdf from products.js defaults) */}
+                {formData.catalogPdf && !isIndexedDbRef(formData.catalogPdf) && !formData.catalogPdf.startsWith('data:') && (
+                  <div className="mt-2 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-blue-600 shrink-0" />
+                      <span className="text-xs font-bold text-blue-800">Current PDF path: <span className="font-extrabold">{formData.catalogPdf}</span></span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                      <a
+                        href={formData.catalogPdf}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-2 py-1 text-xs font-bold text-[#8a3ca9] hover:text-white hover:bg-[#8a3ca9] border border-purple-200 rounded transition"
+                      >
+                        Test
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => { setFormData({ ...formData, catalogPdf: '' }); setPdfFileName(''); }}
+                        className="px-2 py-1 text-xs font-bold text-red-600 hover:text-white hover:bg-red-600 border border-red-200 rounded transition"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Submit / Save Button */}

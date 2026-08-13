@@ -286,7 +286,8 @@ export const PRODUCTS = [
     image: "/images/sofiya/sofiya-1.jpg",
     catalogCode: "SOF-101",
     inStock: true,
-    category: "Sofiya"
+    category: "Sofiya",
+    catalogPdf: "/pdfs/sofiya-catalog.pdf"
   },
   {
     id: 50002,
@@ -303,7 +304,8 @@ export const PRODUCTS = [
     image: "/images/sofiya/sofiya-2.jpg",
     catalogCode: "SOF-102",
     inStock: true,
-    category: "Sofiya"
+    category: "Sofiya",
+    catalogPdf: "/pdfs/sofiya-catalog.pdf"
   },
   {
     id: 50003,
@@ -320,7 +322,8 @@ export const PRODUCTS = [
     image: "/images/sofiya/sofiya-3.jpg",
     catalogCode: "SOF-103",
     inStock: true,
-    category: "Sofiya"
+    category: "Sofiya",
+    catalogPdf: "/pdfs/sofiya-catalog.pdf"
   },
   {
     id: 50004,
@@ -337,7 +340,8 @@ export const PRODUCTS = [
     image: "/images/sofiya/sofiya-4.jpg",
     catalogCode: "SOF-104",
     inStock: true,
-    category: "Sofiya"
+    category: "Sofiya",
+    catalogPdf: "/pdfs/sofiya-catalog.pdf"
   },
   {
     id: 41947,

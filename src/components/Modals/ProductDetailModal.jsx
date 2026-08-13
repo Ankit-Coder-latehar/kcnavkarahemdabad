@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { X, ShoppingBag, Phone, CheckCircle, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ShoppingBag, Phone, CheckCircle, ShieldCheck, Truck, RefreshCw, FileText, Download, Loader } from 'lucide-react';
 import { CURRENCY_RATES } from '../../data/products';
+import { isIndexedDbRef, getKeyFromRef, getPdfBlob } from '../../utils/pdfStorage';
 
 export default function ProductDetailModal({
   product,
@@ -11,6 +12,37 @@ export default function ProductDetailModal({
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(10);
   const [showSizeError, setShowSizeError] = useState(false);
+  // Resolved PDF URL — either a plain path or a blob: URL created from IndexedDB
+  const [resolvedPdfUrl, setResolvedPdfUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  // Resolve catalogPdf: IndexedDB ref → blob URL, plain path → use as-is
+  useEffect(() => {
+    let blobUrl = null;
+    setResolvedPdfUrl(null);
+
+    if (!product?.catalogPdf) return;
+
+    if (isIndexedDbRef(product.catalogPdf)) {
+      setPdfLoading(true);
+      const key = getKeyFromRef(product.catalogPdf);
+      getPdfBlob(key)
+        .then((blob) => {
+          if (blob) {
+            blobUrl = URL.createObjectURL(blob);
+            setResolvedPdfUrl(blobUrl);
+          }
+        })
+        .catch((err) => console.error('Failed to load PDF from IndexedDB', err))
+        .finally(() => setPdfLoading(false));
+    } else if (product.catalogPdf.trim()) {
+      setResolvedPdfUrl(product.catalogPdf.trim());
+    }
+
+    return () => {
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
+  }, [product?.catalogPdf]);
 
   if (!product) return null;
 
@@ -39,7 +71,7 @@ export default function ProductDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
       <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative border-t-4 border-[#b10607]">
-        
+
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -49,7 +81,7 @@ export default function ProductDetailModal({
         </button>
 
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          
+
           {/* Left: Image Container */}
           <div className="flex flex-col items-center justify-center bg-gray-50 rounded-lg p-4 border border-gray-200">
             <img
@@ -109,7 +141,7 @@ export default function ProductDetailModal({
                   <tr>
                     <td className="p-2 font-bold text-gray-700">Availability</td>
                     <td className="p-2 text-green-700 font-extrabold flex items-center gap-1">
-                      <CheckCircle className="w-4 h-4" /> In Stock & Fast Ship
+                      <CheckCircle className="w-4 h-4" /> In Stock &amp; Fast Ship
                     </td>
                   </tr>
                 </tbody>
@@ -179,7 +211,6 @@ export default function ProductDetailModal({
                   ))}
                 </div>
 
-                {/* Error Banner if size is missing */}
                 {showSizeError && (
                   <div className="bg-red-100 border-2 border-red-500 text-red-700 px-3 py-1.5 rounded text-xs font-extrabold mt-2 text-center animate-bounce">
                     ⚠️ Please select a size first before adding to cart!
@@ -205,6 +236,34 @@ export default function ProductDetailModal({
               >
                 <Phone className="w-4 h-4" /> Direct WhatsApp Inquiry
               </a>
+
+              {/* PDF loading spinner */}
+              {pdfLoading && (
+                <div className="flex items-center justify-center gap-2 py-2 text-xs text-[#8a3ca9] font-bold">
+                  <Loader className="w-4 h-4 animate-spin" /> Loading catalog PDF...
+                </div>
+              )}
+
+              {/* PDF action buttons — appear when PDF is ready */}
+              {!pdfLoading && resolvedPdfUrl && (
+                <div className="flex gap-2">
+                  <a
+                    href={resolvedPdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 bg-[#8a3ca9] hover:bg-[#6c2e86] text-white py-2.5 rounded-md font-extrabold text-xs flex items-center justify-center gap-2 transition shadow-md uppercase tracking-wider text-center"
+                  >
+                    <FileText className="w-4 h-4" /> View Catalog PDF
+                  </a>
+                  <a
+                    href={resolvedPdfUrl}
+                    download={`catalog-${product.catalogCode}.pdf`}
+                    className="flex-1 bg-[#36454F] hover:bg-gray-800 text-white py-2.5 rounded-md font-extrabold text-xs flex items-center justify-center gap-2 transition shadow-md uppercase tracking-wider text-center"
+                  >
+                    <Download className="w-4 h-4" /> Download PDF
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Feature Guarantees */}
