@@ -84,14 +84,14 @@ export default function Navbar({
             </li>
           ))}
 
-          {/* Brands Dropdown */}
+          {/* Catalog Dropdown */}
           <li
             className="relative group"
             onMouseEnter={() => setActiveHoverCategory('brands')}
             onMouseLeave={() => setActiveHoverCategory(null)}
           >
             <button className="flex items-center gap-1 px-3.5 py-3.5 hover:text-[#b10607] uppercase transition border-b-2 border-transparent">
-              <span>Brand</span>
+              <span>Catalog</span>
               <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
             </button>
 
@@ -99,7 +99,7 @@ export default function Navbar({
               <div className="absolute left-0 top-full w-72 bg-white border border-gray-200 shadow-xl rounded-b-md p-3 z-50">
                 <input
                   type="text"
-                  placeholder="Search brand..."
+                  placeholder="Search catalog..."
                   value={brandSearch}
                   onChange={(e) => setBrandSearch(e.target.value)}
                   className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm mb-2 outline-none focus:border-[#b10607]"
@@ -198,6 +198,37 @@ export default function Navbar({
                   )}
                 </div>
               ))}
+
+              {/* Mobile Catalog Dropdown */}
+              <div className="py-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[#36454F] uppercase font-semibold">Catalog</span>
+                  <button
+                    onClick={() =>
+                      setMobileExpandedCat(mobileExpandedCat === 'catalog' ? null : 'catalog')
+                    }
+                    className="px-2 py-1 text-gray-500 font-bold"
+                  >
+                    {mobileExpandedCat === 'catalog' ? '-' : '+'}
+                  </button>
+                </div>
+                {mobileExpandedCat === 'catalog' && (
+                  <div className="ml-3 mt-1.5 border-l-2 border-gray-200 pl-2 space-y-1 max-h-48 overflow-y-auto">
+                    {navBrands.map((brand, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          onSelectCategory(brand);
+                          onToggleMobileNav();
+                        }}
+                        className="block w-full text-left py-1 text-gray-600 hover:text-[#b10607] text-[11px]"
+                      >
+                        {brand}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -428,9 +428,9 @@ export default function HeaderMenuManager({
               </span>
             ))}
 
-            {/* Brand Dropdown Mock */}
+            {/* Catalog Dropdown Mock */}
             <span className="flex items-center gap-1 px-3 py-2 uppercase whitespace-nowrap text-gray-700">
-              <span>Brand</span>
+              <span>Catalog</span>
               <ChevronDown className="w-3 h-3 text-gray-400" />
             </span>
           </div>
@@ -976,10 +976,10 @@ export default function HeaderMenuManager({
             <div>
               <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
                 <Tag className="w-5 h-5 text-blue-600" />
-                "Brand" Dropdown Menu Items ({activeBrands.length})
+                "Catalog" Dropdown Menu Items ({activeBrands.length})
               </h3>
               <p className="text-xs text-gray-500 font-medium mt-0.5">
-                These brands appear in the "Brand" search dropdown at the end of the header navigation bar.
+                These catalog items appear in the "Catalog" search dropdown at the end of the header navigation bar.
               </p>
             </div>
             <button
