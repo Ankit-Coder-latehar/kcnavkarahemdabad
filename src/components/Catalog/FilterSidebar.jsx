@@ -12,7 +12,10 @@ export default function FilterSidebar({
   onToggleSize,
   priceRange,
   onPriceRangeChange,
-  onResetFilters
+  onResetFilters,
+  categories,
+  fabricOptions,
+  sizeOptions
 }) {
   const [minPriceInput, setMinPriceInput] = useState(priceRange.min || '');
   const [maxPriceInput, setMaxPriceInput] = useState(priceRange.max || '');
@@ -21,7 +24,10 @@ export default function FilterSidebar({
   const [sizeOpen, setSizeOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
 
-  const availableSizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+  // Use dynamic props, fall back to static imports
+  const activeCategories = categories || CATEGORIES;
+  const activeFabrics = fabricOptions || FABRIC_OPTIONS;
+  const activeSizes = sizeOptions || ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
 
   const handleApplyPrice = (e) => {
     e.preventDefault();
@@ -68,7 +74,7 @@ export default function FilterSidebar({
             >
               All Categories
             </button>
-            {CATEGORIES.map((cat) => (
+            {activeCategories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => onSelectCategory(cat.name)}
@@ -82,8 +88,8 @@ export default function FilterSidebar({
               </button>
             ))}
             <div className="border-t border-gray-100 my-1 pt-1">
-              <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Styles & Types</div>
-              {CATEGORIES[0].subcategories.map((sub, idx) => (
+              <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Styles &amp; Types</div>
+              {activeCategories[0]?.subcategories?.map((sub, idx) => (
                 <button
                   key={idx}
                   onClick={() => onSelectCategory(sub.name)}
@@ -150,7 +156,7 @@ export default function FilterSidebar({
 
         {sizeOpen && (
           <div className="flex flex-wrap gap-1.5 mt-1">
-            {availableSizes.map((size) => {
+            {activeSizes.map((size) => {
               const isSelected = selectedSizes.includes(size);
               return (
                 <button
@@ -182,7 +188,7 @@ export default function FilterSidebar({
 
         {fabricOpen && (
           <div className="space-y-1.5 max-h-56 overflow-y-auto pl-0.5">
-            {FABRIC_OPTIONS.map((fabric, idx) => {
+            {activeFabrics.map((fabric, idx) => {
               const isChecked = selectedFabrics.includes(fabric);
               return (
                 <label

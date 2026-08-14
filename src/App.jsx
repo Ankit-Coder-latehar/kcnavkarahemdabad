@@ -16,6 +16,7 @@ import AdminLoginModal from './components/Admin/AdminLoginModal';
 import HeroSection from './components/Hero/HeroSection';
 
 import { PRODUCTS } from './data/products';
+import { loadSiteConfig, saveSiteConfig } from './data/siteConfig';
 
 export default function App() {
   // State for Navigation / View Mode
@@ -26,6 +27,18 @@ export default function App() {
     return sessionStorage.getItem('kcnavkar_admin_logged') === 'true';
   });
   const [adminLoginModalOpen, setAdminLoginModalOpen] = useState(false);
+
+  // Site Config: categories (navbar), sizes & fabrics (filter sidebar)
+  const [siteConfig, setSiteConfig] = useState(() => loadSiteConfig());
+
+  // Persist site config whenever it changes
+  useEffect(() => {
+    saveSiteConfig(siteConfig);
+  }, [siteConfig]);
+
+  const handleUpdateSiteConfig = (updatedConfig) => {
+    setSiteConfig((prev) => ({ ...prev, ...updatedConfig }));
+  };
 
   // Dynamic Products List with localStorage Persistence
   const [productsList, setProductsList] = useState(() => {
@@ -330,6 +343,8 @@ export default function App() {
           onBackToStorefront={handleAdminLogout}
           onLogout={handleAdminLogout}
           activeCurrency={activeCurrency}
+          siteConfig={siteConfig}
+          onUpdateSiteConfig={handleUpdateSiteConfig}
         />
       ) : (
         <>
@@ -339,6 +354,8 @@ export default function App() {
             onSelectCategory={setSelectedCategory}
             mobileNavOpen={mobileNavOpen}
             onToggleMobileNav={() => setMobileNavOpen(!mobileNavOpen)}
+            categories={siteConfig.headerCategories}
+            brands={siteConfig.brands}
           />
 
           {/* Hero Section Banner */}
@@ -379,6 +396,9 @@ export default function App() {
                   priceRange={priceRange}
                   onPriceRangeChange={setPriceRange}
                   onResetFilters={handleResetFilters}
+                  categories={siteConfig.filterCategories}
+                  fabricOptions={siteConfig.fabrics}
+                  sizeOptions={siteConfig.sizes}
                 />
               </div>
 

@@ -6,13 +6,19 @@ export default function Navbar({
   selectedCategory,
   onSelectCategory,
   mobileNavOpen,
-  onToggleMobileNav
+  onToggleMobileNav,
+  categories,
+  brands
 }) {
   const [activeHoverCategory, setActiveHoverCategory] = useState(null);
   const [mobileExpandedCat, setMobileExpandedCat] = useState(null);
   const [brandSearch, setBrandSearch] = useState('');
 
-  const filteredBrands = BRANDS.filter((b) =>
+  // Use prop categories if provided, fall back to static import
+  const navCategories = categories || CATEGORIES;
+  const navBrands = brands || BRANDS;
+
+  const filteredBrands = navBrands.filter((b) =>
     b.toLowerCase().includes(brandSearch.toLowerCase())
   );
 
@@ -36,7 +42,7 @@ export default function Navbar({
           </li>
 
           {/* Categories List with Hover Mega-Menu */}
-          {CATEGORIES.map((cat) => (
+          {navCategories.map((cat) => (
             <li
               key={cat.id}
               className="relative group"
@@ -150,7 +156,7 @@ export default function Navbar({
                 Home
               </button>
 
-              {CATEGORIES.map((cat) => (
+              {navCategories.map((cat) => (
                 <div key={cat.id} className="py-2">
                   <div className="flex items-center justify-between">
                     <button

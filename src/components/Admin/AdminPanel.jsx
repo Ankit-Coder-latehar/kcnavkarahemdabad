@@ -17,10 +17,15 @@ import {
   Upload,
   Link,
   FileText,
-  Download
+  Download,
+  Settings,
+  PlusCircle,
+  Sliders,
+  FolderTree
 } from 'lucide-react';
 import { FABRIC_OPTIONS, CURRENCY_RATES } from '../../data/products';
 import { CATEGORIES } from '../../data/categories';
+import HeaderMenuManager from './HeaderMenuManager';
 
 export default function AdminPanel({
   products,
@@ -30,7 +35,9 @@ export default function AdminPanel({
   onResetProducts,
   onBackToStorefront,
   onLogout,
-  activeCurrency
+  activeCurrency,
+  siteConfig,
+  onUpdateSiteConfig
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('all');
@@ -40,6 +47,32 @@ export default function AdminPanel({
   const [uploadFileName, setUploadFileName] = useState('');
   const [pdfFileName, setPdfFileName] = useState('');
   const [pdfUploading, setPdfUploading] = useState(false);
+
+  // Tabs for the Admin Workspace
+  const [activeTab, setActiveTab] = useState('products'); // 'products' | 'settings'
+
+  // Settings State Variables
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryUrl, setNewCategoryUrl] = useState('');
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [editingCategoryName, setEditingCategoryName] = useState('');
+  const [editingCategoryUrl, setEditingCategoryUrl] = useState('');
+
+  const [newSubcatName, setNewSubcatName] = useState('');
+  const [newSubcatUrl, setNewSubcatUrl] = useState('');
+  const [activeCategoryForSubcat, setActiveCategoryForSubcat] = useState(null);
+
+  const [newFabricName, setNewFabricName] = useState('');
+  const [newSizeName, setNewSizeName] = useState('');
+
+  // Fallbacks for siteConfig
+  const activeHeaderCategories = siteConfig?.headerCategories || CATEGORIES;
+  const activeFilterCategories = siteConfig?.filterCategories || CATEGORIES;
+  const activeFabrics = siteConfig?.fabrics || FABRIC_OPTIONS;
+  const activeSizes = siteConfig?.sizes || ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+
+  // Toggle for Header Categories vs Filter Categories
+  const [categoryEditTab, setCategoryEditTab] = useState('header'); // 'header' | 'filter'
 
 
   // Image Upload File Handler
@@ -123,6 +156,128 @@ export default function AdminPanel({
     }
   };
 
+  // Setting Action Handlers
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) return;
+    const id = newCategoryName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const newCat = {
+      id,
+      name: newCategoryName.trim(),
+      url: newCategoryUrl.trim() || `/${id}-wholesale`,
+      subcategories: []
+    };
+    const listToUpdate = categoryEditTab === 'header' ? activeHeaderCategories : activeFilterCategories;
+    const updateKey = categoryEditTab === 'header' ? 'headerCategories' : 'filterCategories';
+    onUpdateSiteConfig({ [updateKey]: [...listToUpdate, newCat] });
+    setNewCategoryName('');
+    setNewCategoryUrl('');
+  };
+
+  const handleDeleteCategory = (catId) => {
+    if (window.confirm('Are you sure you want to delete this category? All its subcategories will also be deleted.')) {
+      const listToUpdate = categoryEditTab === 'header' ? activeHeaderCategories : activeFilterCategories;
+      const updateKey = categoryEditTab === 'header' ? 'headerCategories' : 'filterCategories';
+      const updated = listToUpdate.filter((c) => c.id !== catId);
+      onUpdateSiteConfig({ [updateKey]: updated });
+    }
+  };
+
+  const handleStartEditCategory = (cat) => {
+    setEditingCategoryId(cat.id);
+    setEditingCategoryName(cat.name);
+    setEditingCategoryUrl(cat.url);
+  };
+
+  const handleSaveEditCategory = () => {
+    if (!editingCategoryName.trim()) return;
+    const listToUpdate = categoryEditTab === 'header' ? activeHeaderCategories : activeFilterCategories;
+    const updateKey = categoryEditTab === 'header' ? 'headerCategories' : 'filterCategories';
+    const updated = listToUpdate.map((c) => {
+      if (c.id === editingCategoryId) {
+        return {
+          ...c,
+          name: editingCategoryName.trim(),
+          url: editingCategoryUrl.trim() || c.url
+        };
+      }
+      return c;
+    });
+    onUpdateSiteConfig({ [updateKey]: updated });
+    setEditingCategoryId(null);
+    setEditingCategoryName('');
+    setEditingCategoryUrl('');
+  };
+
+  const handleAddSubcategory = (catId) => {
+    if (!newSubcatName.trim()) return;
+    const listToUpdate = categoryEditTab === 'header' ? activeHeaderCategories : activeFilterCategories;
+    const updateKey = categoryEditTab === 'header' ? 'headerCategories' : 'filterCategories';
+    const updated = listToUpdate.map((c) => {
+      if (c.id === catId) {
+        const subUrl = newSubcatUrl.trim() || `/${newSubcatName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-wholesale`;
+        return {
+          ...c,
+          subcategories: [...(c.subcategories || []), { name: newSubcatName.trim(), url: subUrl }]
+        };
+      }
+      return c;
+    });
+    onUpdateSiteConfig({ [updateKey]: updated });
+    setNewSubcatName('');
+    setNewSubcatUrl('');
+  };
+
+  const handleDeleteSubcategory = (catId, subIdx) => {
+    if (window.confirm('Are you sure you want to delete this subcategory?')) {
+      const listToUpdate = categoryEditTab === 'header' ? activeHeaderCategories : activeFilterCategories;
+      const updateKey = categoryEditTab === 'header' ? 'headerCategories' : 'filterCategories';
+      const updated = listToUpdate.map((c) => {
+        if (c.id === catId) {
+          const subFiltered = (c.subcategories || []).filter((_, idx) => idx !== subIdx);
+          return { ...c, subcategories: subFiltered };
+        }
+        return c;
+      });
+      onUpdateSiteConfig({ [updateKey]: updated });
+    }
+  };
+
+  const handleAddFabricSetting = () => {
+    if (!newFabricName.trim()) return;
+    const cleanFabric = newFabricName.trim();
+    if (activeFabrics.some((f) => f.toLowerCase() === cleanFabric.toLowerCase())) {
+      alert('This fabric already exists.');
+      return;
+    }
+    onUpdateSiteConfig({ fabrics: [...activeFabrics, cleanFabric] });
+    setNewFabricName('');
+  };
+
+  const handleDeleteFabricSetting = (fabricToDelete) => {
+    if (window.confirm(`Are you sure you want to remove "${fabricToDelete}" from fabrics list?`)) {
+      const updated = activeFabrics.filter((f) => f !== fabricToDelete);
+      onUpdateSiteConfig({ fabrics: updated });
+    }
+  };
+
+  const handleAddSizeSetting = () => {
+    if (!newSizeName.trim()) return;
+    const cleanSize = newSizeName.trim().toUpperCase();
+    if (activeSizes.includes(cleanSize)) {
+      alert('This size already exists.');
+      return;
+    }
+    onUpdateSiteConfig({ sizes: [...activeSizes, cleanSize] });
+    setNewSizeName('');
+  };
+
+  const handleDeleteSizeSetting = (sizeToDelete) => {
+    if (window.confirm(`Are you sure you want to remove "${sizeToDelete}" from sizes list?`)) {
+      const updated = activeSizes.filter((s) => s !== sizeToDelete);
+      onUpdateSiteConfig({ sizes: updated });
+    }
+  };
+
   // Form State
   const [formData, setFormData] = useState({
     id: null,
@@ -142,7 +297,7 @@ export default function AdminPanel({
     inStock: true
   });
 
-  const availableSizesList = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'];
+  const availableSizesList = activeSizes;
 
   // Currency helper
   const currencyInfo = CURRENCY_RATES[activeCurrency] || CURRENCY_RATES.INR;
@@ -347,160 +502,476 @@ export default function AdminPanel({
         </div>
       </div>
 
-      {/* Filter & Search Bar for Admin Table */}
-      <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3 flex-1 min-w-[260px]">
-          <div className="relative w-full">
-            <input
-              type="text"
-              placeholder="Search product title, code, or fabric..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm outline-none focus:border-[#b10607]"
-            />
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-gray-600 uppercase">Filter Category:</span>
-          <select
-            value={selectedCategoryFilter}
-            onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-[#b10607]"
-          >
-            <option value="all">All Categories</option>
-            {CATEGORIES.map((cat) => (
-              <option key={cat.id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-            {CATEGORIES[0].subcategories.map((sub, idx) => (
-              <option key={`sub-${idx}`} value={sub.name}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Workspace Tabs Selector */}
+      <div className="flex flex-wrap border-b border-gray-200 mb-6 bg-white rounded-lg p-1.5 shadow-sm max-w-2xl gap-1">
+        <button
+          onClick={() => setActiveTab('products')}
+          className={`flex-1 min-w-[140px] py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-md flex items-center justify-center gap-2 transition ${
+            activeTab === 'products'
+              ? 'bg-[#b10607] text-white shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          <Package className="w-4 h-4" /> Manage Products ({products.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('header-menu')}
+          className={`flex-1 min-w-[170px] py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-md flex items-center justify-center gap-2 transition ${
+            activeTab === 'header-menu'
+              ? 'bg-[#b10607] text-white shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          <FolderTree className="w-4 h-4" /> Header &amp; Navbar Menu ({activeHeaderCategories.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`flex-1 min-w-[140px] py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-md flex items-center justify-center gap-2 transition ${
+            activeTab === 'settings'
+              ? 'bg-[#b10607] text-white shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          <Sliders className="w-4 h-4" /> Sidebar Filters
+        </button>
       </div>
 
-      {/* Products Management Table */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead className="bg-[#36454F] text-white text-xs uppercase tracking-wider font-extrabold">
-              <tr>
-                <th className="p-3.5">Product Image</th>
-                <th className="p-3.5">Title & Code</th>
-                <th className="p-3.5">Category & Fabric</th>
-                <th className="p-3.5">Price & Margin</th>
-                <th className="p-3.5">Sizes & MOQ</th>
-                <th className="p-3.5 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 font-medium">
-              {filteredAdminProducts.length > 0 ? (
-                filteredAdminProducts.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-gray-50 transition">
-                    {/* Image */}
-                    <td className="p-3">
-                      <img
-                        src={prod.image}
-                        alt={prod.title}
-                        className="w-16 h-16 object-contain rounded border border-gray-200 bg-gray-50 p-1"
-                        onError={(e) => {
-                          e.target.src =
-                            'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80';
-                        }}
-                      />
-                    </td>
+      {activeTab === 'header-menu' && (
+        <HeaderMenuManager
+          siteConfig={siteConfig}
+          onUpdateSiteConfig={onUpdateSiteConfig}
+        />
+      )}
 
-                    {/* Title & Code */}
-                    <td className="p-3 max-w-xs">
-                      <div className="font-extrabold text-gray-900 text-sm line-clamp-2">
-                        {prod.title}
+      {activeTab === 'products' && (
+        <>
+          {/* Filter & Search Bar for Admin Table */}
+          <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1 min-w-[260px]">
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder="Search product title, code, or fabric..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm outline-none focus:border-[#b10607]"
+                />
+                <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-gray-600 uppercase">Filter Category:</span>
+              <select
+                value={selectedCategoryFilter}
+                onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+                className="border border-gray-300 rounded px-3 py-2 text-xs font-bold text-gray-800 outline-none focus:border-[#b10607]"
+              >
+                <option value="all">All Categories</option>
+                {activeFilterCategories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+                {activeFilterCategories[0]?.subcategories?.map((sub, idx) => (
+                  <option key={`sub-${idx}`} value={sub.name}>
+                    {sub.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Products Management Table */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm border-collapse">
+                <thead className="bg-[#36454F] text-white text-xs uppercase tracking-wider font-extrabold">
+                  <tr>
+                    <th className="p-3.5">Product Image</th>
+                    <th className="p-3.5">Title &amp; Code</th>
+                    <th className="p-3.5">Category &amp; Fabric</th>
+                    <th className="p-3.5">Price &amp; Margin</th>
+                    <th className="p-3.5">Sizes &amp; MOQ</th>
+                    <th className="p-3.5 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 font-medium">
+                  {filteredAdminProducts.length > 0 ? (
+                    filteredAdminProducts.map((prod) => (
+                      <tr key={prod.id} className="hover:bg-gray-50 transition">
+                        {/* Image */}
+                        <td className="p-3">
+                          <img
+                            src={prod.image}
+                            alt={prod.title}
+                            className="w-16 h-16 object-contain rounded border border-gray-200 bg-gray-50 p-1"
+                            onError={(e) => {
+                              e.target.src =
+                                'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80';
+                            }}
+                          />
+                        </td>
+
+                        {/* Title & Code */}
+                        <td className="p-3 max-w-xs">
+                          <div className="font-extrabold text-gray-900 text-sm line-clamp-2">
+                            {prod.title}
+                          </div>
+                          <div className="text-xs text-gray-500 font-semibold mt-1">
+                            Code: <span className="text-[#8a3ca9] font-bold">{prod.catalogCode}</span>
+                          </div>
+                        </td>
+
+                        {/* Category & Fabric */}
+                        <td className="p-3">
+                          <span className="inline-block bg-gray-100 border border-gray-300 text-gray-800 text-xs font-bold px-2 py-0.5 rounded mb-1">
+                            {prod.category}
+                          </span>
+                          <div className="text-xs text-gray-600 font-semibold">
+                            Fabric: {prod.fabric}
+                          </div>
+                        </td>
+
+                        {/* Price & Margin */}
+                        <td className="p-3">
+                          <div className="font-extrabold text-[#b10607] text-sm">
+                            {formatPrice(prod.price)} / Pc
+                          </div>
+                          <div className="text-xs text-gray-400 line-through">
+                            MRP: {formatPrice(prod.mrp)}
+                          </div>
+                          <span className="inline-block bg-[#76b51b] text-white text-[10px] font-bold px-1.5 py-0.2 rounded mt-1">
+                            Margin {prod.margin}
+                          </span>
+                        </td>
+
+                        {/* Sizes & MOQ */}
+                        <td className="p-3">
+                          <div className="text-xs font-semibold text-gray-700 mb-1">
+                            MOQ: <strong className="text-gray-900">{prod.moq}</strong>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {prod.sizes.map((s, idx) => (
+                              <span
+                                key={idx}
+                                className="bg-[#8a3ca9] text-white text-[10px] font-bold px-1.5 py-0.5 rounded"
+                              >
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="p-3 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => handleOpenEditForm(prod)}
+                              className="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white p-2 rounded-md transition font-bold text-xs flex items-center gap-1 border border-blue-200"
+                              title="Edit Product"
+                            >
+                              <Edit2 className="w-4 h-4" /> Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to delete "${prod.title}"?`)) {
+                                  onDeleteProduct(prod.id);
+                                }
+                              }}
+                              className="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white p-2 rounded-md transition font-bold text-xs flex items-center gap-1 border border-red-200"
+                              title="Delete Product"
+                            >
+                              <Trash2 className="w-4 h-4" /> Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="p-12 text-center text-gray-500 font-bold">
+                        No products matching your search criteria.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'settings' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeIn">
+          {/* Column 1: Categories & Subcategories Manager */}
+          <div className="lg:col-span-2 bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
+            <h2 className="text-base font-extrabold text-gray-900 uppercase flex items-center gap-2 pb-3 border-b border-gray-100 mb-4">
+              <Layers className="w-5 h-5 text-[#b10607]" /> Categories &amp; Subcategories
+            </h2>
+
+            {/* Sub-Tabs selector: Header Menu vs Filter Sidebar Categories */}
+            <div className="flex border border-gray-200 mb-6 bg-gray-50 p-1 rounded-md max-w-sm">
+              <button
+                onClick={() => { setCategoryEditTab('header'); setEditingCategoryId(null); }}
+                className={`flex-1 py-2 text-xs font-black rounded-md transition ${
+                  categoryEditTab === 'header'
+                    ? 'bg-[#b10607] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Header Navigation
+              </button>
+              <button
+                onClick={() => { setCategoryEditTab('filter'); setEditingCategoryId(null); }}
+                className={`flex-1 py-2 text-xs font-black rounded-md transition ${
+                  categoryEditTab === 'filter'
+                    ? 'bg-[#b10607] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Filter Sidebar
+              </button>
+            </div>
+
+            {/* Edit / Add Category forms */}
+            {editingCategoryId ? (
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-md mb-6">
+                <h3 className="text-xs font-extrabold text-amber-800 uppercase mb-2">Edit Category ({categoryEditTab === 'header' ? 'Header' : 'Filter'})</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <input
+                    type="text"
+                    placeholder="Category Name (e.g. Kurti)"
+                    value={editingCategoryName}
+                    onChange={(e) => setEditingCategoryName(e.target.value)}
+                    className="border border-gray-300 rounded px-3 py-2 text-sm font-semibold outline-none focus:border-amber-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Link URL path (e.g. /wholesale-kurtis)"
+                    value={editingCategoryUrl}
+                    onChange={(e) => setEditingCategoryUrl(e.target.value)}
+                    className="border border-gray-300 rounded px-3 py-2 text-sm font-semibold outline-none focus:border-amber-500"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => setEditingCategoryId(null)}
+                    className="px-3 py-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveEditCategory}
+                    className="px-3 py-1.5 text-xs font-bold text-white bg-amber-600 rounded hover:bg-amber-700 transition"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-md mb-6">
+                <h3 className="text-xs font-extrabold text-gray-700 uppercase mb-2">Add New {categoryEditTab === 'header' ? 'Header' : 'Filter'} Category</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                  <input
+                    type="text"
+                    placeholder="Category Name (e.g. Gowns)"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    className="border border-gray-300 bg-white rounded px-3 py-2 text-sm font-semibold outline-none focus:border-[#b10607]"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Link URL path (optional)"
+                    value={newCategoryUrl}
+                    onChange={(e) => setNewCategoryUrl(e.target.value)}
+                    className="border border-gray-300 bg-white rounded px-3 py-2 text-sm font-semibold outline-none focus:border-[#b10607]"
+                  />
+                </div>
+                <button
+                  onClick={handleAddCategory}
+                  className="w-full bg-[#b10607] hover:bg-[#8b0405] text-white py-2 rounded font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm"
+                >
+                  <PlusCircle className="w-4 h-4" /> Create Category
+                </button>
+              </div>
+            )}
+
+            {/* List Categories */}
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+              {(categoryEditTab === 'header' ? activeHeaderCategories : activeFilterCategories).map((cat) => (
+                <div key={cat.id} className="border border-gray-200 rounded-lg p-4 bg-white hover:border-[#b10607] transition shadow-xs">
+                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-gray-100">
+                    <div>
+                      <div className="font-extrabold text-sm text-gray-900 flex items-center gap-2">
+                        <span>{cat.name}</span>
+                        <span className="text-[10px] text-gray-400 font-mono normal-case px-1.5 py-0.5 bg-gray-100 rounded">
+                          ID: {cat.id}
+                        </span>
                       </div>
                       <div className="text-xs text-gray-500 font-semibold mt-1">
-                        Code: <span className="text-[#8a3ca9] font-bold">{prod.catalogCode}</span>
+                        URL: <span className="text-blue-600 font-mono">{cat.url}</span>
                       </div>
-                    </td>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => handleStartEditCategory(cat)}
+                        className="p-1.5 text-gray-500 hover:text-amber-600 bg-gray-50 border border-gray-200 rounded transition"
+                        title="Edit name and url"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCategory(cat.id)}
+                        className="p-1.5 text-red-500 hover:text-white hover:bg-red-600 bg-gray-50 border border-red-100 rounded transition"
+                        title="Delete category"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
 
-                    {/* Category & Fabric */}
-                    <td className="p-3">
-                      <span className="inline-block bg-gray-100 border border-gray-300 text-gray-800 text-xs font-bold px-2 py-0.5 rounded mb-1">
-                        {prod.category}
-                      </span>
-                      <div className="text-xs text-gray-600 font-semibold">
-                        Fabric: {prod.fabric}
-                      </div>
-                    </td>
-
-                    {/* Price & Margin */}
-                    <td className="p-3">
-                      <div className="font-extrabold text-[#b10607] text-sm">
-                        {formatPrice(prod.price)} / Pc
-                      </div>
-                      <div className="text-xs text-gray-400 line-through">
-                        MRP: {formatPrice(prod.mrp)}
-                      </div>
-                      <span className="inline-block bg-[#76b51b] text-white text-[10px] font-bold px-1.5 py-0.2 rounded mt-1">
-                        Margin {prod.margin}
-                      </span>
-                    </td>
-
-                    {/* Sizes & MOQ */}
-                    <td className="p-3">
-                      <div className="text-xs font-semibold text-gray-700 mb-1">
-                        MOQ: <strong className="text-gray-900">{prod.moq}</strong>
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {prod.sizes.map((s, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-[#8a3ca9] text-white text-[10px] font-bold px-1.5 py-0.5 rounded"
-                          >
-                            {s}
-                          </span>
+                  {/* Subcategories list */}
+                  <div className="mt-3">
+                    <div className="text-[11px] font-extrabold text-gray-500 uppercase tracking-wide mb-2">
+                      Subcategories ({cat.subcategories ? cat.subcategories.length : 0})
+                    </div>
+                    {cat.subcategories && cat.subcategories.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {cat.subcategories.map((sub, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 pl-2.5 pr-1 py-1 rounded text-xs font-semibold text-gray-700">
+                            <span>{sub.name}</span>
+                            <button
+                              onClick={() => handleDeleteSubcategory(cat.id, idx)}
+                              className="text-gray-400 hover:text-red-600 p-0.5 rounded transition"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
                         ))}
                       </div>
-                    </td>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic mb-3">No subcategories yet. Items in this category will show directly.</p>
+                    )}
 
-                    {/* Actions */}
-                    <td className="p-3 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleOpenEditForm(prod)}
-                          className="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white p-2 rounded-md transition font-bold text-xs flex items-center gap-1 border border-blue-200"
-                          title="Edit Product"
-                        >
-                          <Edit2 className="w-4 h-4" /> Edit
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (confirm(`Are you sure you want to delete "${prod.title}"?`)) {
-                              onDeleteProduct(prod.id);
-                            }
+                    {/* Add Subcategory inline */}
+                    <div className="bg-gray-50/50 p-2.5 rounded border border-gray-100">
+                      <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
+                        <input
+                          type="text"
+                          placeholder="Subcategory Name (e.g. Cotton Kurtis)"
+                          value={activeCategoryForSubcat === cat.id ? newSubcatName : ''}
+                          onChange={(e) => {
+                            setActiveCategoryForSubcat(cat.id);
+                            setNewSubcatName(e.target.value);
                           }}
-                          className="bg-red-50 hover:bg-red-600 text-red-600 hover:text-white p-2 rounded-md transition font-bold text-xs flex items-center gap-1 border border-red-200"
-                          title="Delete Product"
+                          className="w-full sm:w-1/2 border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-[#b10607] font-semibold bg-white"
+                        />
+                        <input
+                          type="text"
+                          placeholder="URL path (optional)"
+                          value={activeCategoryForSubcat === cat.id ? newSubcatUrl : ''}
+                          onChange={(e) => {
+                            setActiveCategoryForSubcat(cat.id);
+                            setNewSubcatUrl(e.target.value);
+                          }}
+                          className="w-full sm:w-1/3 border border-gray-300 rounded px-2.5 py-1 text-xs outline-none focus:border-[#b10607] font-semibold bg-white"
+                        />
+                        <button
+                          onClick={() => handleAddSubcategory(cat.id)}
+                          className="w-full sm:w-auto px-3 py-1 bg-gray-800 hover:bg-[#b10607] text-white rounded font-bold text-xs transition whitespace-nowrap"
                         >
-                          <Trash2 className="w-4 h-4" /> Delete
+                          Add Sub
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="p-12 text-center text-gray-500 font-bold">
-                    No products matching your search criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 2: Fabrics & Sizes Managers */}
+          <div className="space-y-6">
+            {/* Fabric Manager Card */}
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base font-extrabold text-gray-900 uppercase flex items-center gap-2 pb-3 border-b border-gray-100 mb-4">
+                <Sliders className="w-5 h-5 text-[#b10607]" /> Fabric Options
+              </h2>
+
+              <div className="flex gap-2 mb-4">
+                <input
+                  type="text"
+                  placeholder="New Fabric (e.g. Georgette)"
+                  value={newFabricName}
+                  onChange={(e) => setNewFabricName(e.target.value)}
+                  className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-[#b10607] font-semibold"
+                />
+                <button
+                  onClick={handleAddFabricSetting}
+                  className="bg-[#b10607] hover:bg-[#8b0405] text-white px-3 py-1.5 rounded font-extrabold text-xs transition"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="divide-y divide-gray-100 max-h-56 overflow-y-auto pr-1">
+                {activeFabrics.map((fabric, idx) => (
+                  <div key={idx} className="flex items-center justify-between py-2 text-xs font-semibold text-gray-700">
+                    <span>{fabric}</span>
+                    <button
+                      onClick={() => handleDeleteFabricSetting(fabric)}
+                      className="text-gray-400 hover:text-red-600 p-1 transition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Size Manager Card */}
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
+              <h2 className="text-base font-extrabold text-gray-900 uppercase flex items-center gap-2 pb-3 border-b border-gray-100 mb-4">
+                <Tag className="w-5 h-5 text-[#b10607]" /> Size Options
+              </h2>
+
+              <div className="flex gap-2 mb-4">
+                <input
+                  type="text"
+                  placeholder="New Size (e.g. 5XL)"
+                  value={newSizeName}
+                  onChange={(e) => setNewSizeName(e.target.value)}
+                  className="flex-1 border border-gray-300 rounded px-3 py-1.5 text-xs outline-none focus:border-[#b10607] font-semibold"
+                />
+                <button
+                  onClick={handleAddSizeSetting}
+                  className="bg-[#b10607] hover:bg-[#8b0405] text-white px-3 py-1.5 rounded font-extrabold text-xs transition"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
+                {activeSizes.map((size) => (
+                  <div
+                    key={size}
+                    className="flex items-center gap-1 bg-gray-50 border border-gray-200 pl-2.5 pr-1 py-1 rounded text-xs font-extrabold text-gray-800"
+                  >
+                    <span>{size}</span>
+                    <button
+                      onClick={() => handleDeleteSizeSetting(size)}
+                      className="text-gray-400 hover:text-red-600 p-0.5 rounded transition"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Add / Edit Product Modal Form */}
       {isFormOpen && (
@@ -665,12 +1136,12 @@ export default function AdminPanel({
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm font-bold outline-none focus:border-[#b10607]"
                   >
-                    {CATEGORIES.map((cat) => (
+                    {activeFilterCategories.map((cat) => (
                       <option key={cat.id} value={cat.name}>
                         {cat.name}
                       </option>
                     ))}
-                    {CATEGORIES[0].subcategories.map((sub, idx) => (
+                    {activeFilterCategories[0]?.subcategories?.map((sub, idx) => (
                       <option key={`sub-${idx}`} value={sub.name}>
                         {sub.name}
                       </option>
@@ -690,7 +1161,7 @@ export default function AdminPanel({
                     onChange={(e) => setFormData({ ...formData, fabric: e.target.value })}
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm font-semibold outline-none focus:border-[#b10607]"
                   >
-                    {FABRIC_OPTIONS.map((fab, idx) => (
+                    {activeFabrics.map((fab, idx) => (
                       <option key={idx} value={fab}>
                         {fab}
                       </option>
