@@ -31,7 +31,7 @@ export default function ProductGrid({
         {/* Category Title & Count */}
         <div>
           <h1 className="font-extrabold text-xl text-[#36454F] capitalize mb-0.5">
-            {selectedCategory === 'all' ? 'Wholesale Kurtis In Surat' : selectedCategory}
+            {selectedCategory === 'all' ? 'Wholesale Kurtis In Ahmedabad' : selectedCategory}
           </h1>
           <p className="text-gray-500 text-sm">
             Showing <span className="font-bold text-black">{visibleProducts.length}</span> of{' '}

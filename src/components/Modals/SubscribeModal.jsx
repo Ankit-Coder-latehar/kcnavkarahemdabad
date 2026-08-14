@@ -46,7 +46,7 @@ export default function SubscribeModal({ isOpen, onClose }) {
               <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-2 animate-bounce" />
               <h4 className="font-extrabold text-gray-800 text-sm">Thank You for Subscribing!</h4>
               <p className="text-xs text-gray-500 mt-1">
-                You will now receive exclusive Surat wholesale updates directly.
+                You will now receive exclusive Ahmedabad wholesale updates directly.
               </p>
             </div>
           ) : (

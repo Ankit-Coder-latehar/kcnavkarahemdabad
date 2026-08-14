@@ -375,7 +375,7 @@ export default function App() {
               </button>
               <span>/</span>
               <span className="text-gray-900 font-bold capitalize text-sm">
-                {selectedCategory === 'all' ? 'Wholesale Kurtis In Surat' : selectedCategory}
+                {selectedCategory === 'all' ? 'Wholesale Kurtis In Ahmedabad' : selectedCategory}
               </span>
             </div>
           </div>

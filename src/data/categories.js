@@ -2,7 +2,7 @@ export const CATEGORIES = [
   {
     id: "kurti",
     name: "Kurti",
-    url: "/wholesale-kurtis-in-surat",
+    url: "/wholesale-kurtis-in-ahmedabad",
     subcategories: [
       { name: "Premium Brand Mfg Kurtis", url: "/direct-manufacturer-of-kurtis" },
       { name: "Boutique Kurti", url: "/boutique-kurti-wholesale" },
@@ -15,7 +15,7 @@ export const CATEGORIES = [
       { name: "Feeding Kurtis", url: "/feeding-kurtis-wholesale" },
       { name: "Kurti Pant With Dupatta", url: "/kurti-pant-with-dupatta" },
       { name: "Kurti With Plazzo", url: "/kurti-with-plazzo" },
-      { name: "Tops Tunics", url: "/tunic-tops-wholesale-in-surat" },
+      { name: "Tops Tunics", url: "/tunic-tops-wholesale-in-ahmedabad" },
       { name: "Co Ord Set", url: "/co-ord-set-wholesale" },
       { name: "Naira Cut Kurtis-dress", url: "/naira-cut-kurtis-dress" },
       { name: "Jaipuri Kurtis", url: "/jaipuri-kurtis-wholesale" },
@@ -61,12 +61,12 @@ export const CATEGORIES = [
   {
     id: "sarees",
     name: "Sarees",
-    url: "/surat-wholesale-sarees",
+    url: "/ahmedabad-wholesale-sarees",
     subcategories: [
       { name: "Banarasi Sarees", url: "/banarasi-sarees" },
       { name: "Casual Sarees", url: "/casual-sarees" },
       { name: "Designer Saree", url: "/designer-saree" },
-      { name: "Bandhani Sarees", url: "/bandhani-sarees-surat-online" },
+      { name: "Bandhani Sarees", url: "/bandhani-sarees-ahmedabad-online" },
       { name: "Single Saree", url: "/single-saree-at-wholesale-price" },
       { name: "Ready To Wear Sarees", url: "/ready-to-wear-sarees" },
       { name: "Linen Saree", url: "/linen-saree" },
@@ -78,7 +78,7 @@ export const CATEGORIES = [
   {
     id: "lehenga",
     name: "Lehenga Choli",
-    url: "/surat-wholesale-lehenga",
+    url: "/ahmedabad-wholesale-lehenga",
     subcategories: [
       { name: "Bridal Lehenga", url: "/bridal-lehenga" },
       { name: "Party Wear Lehenga", url: "/party-wear-lehenga" },
@@ -95,7 +95,7 @@ export const CATEGORIES = [
       { name: "Printed Salwar Suits", url: "/printed-salwar-suits" },
       { name: "Churidar Salwar Suits", url: "/churidar-salwar-suits" },
       { name: "Cotton Salwar Kameez", url: "/cotton-salwar-kameez" },
-      { name: "Readymade Salwar Kameez", url: "/wholesale-salwar-suits-online-surat" },
+      { name: "Readymade Salwar Kameez", url: "/wholesale-salwar-suits-online-ahmedabad" },
       { name: "Single Salwar Kameez", url: "/single-salwar-kameez" }
     ]
   },
@@ -135,7 +135,7 @@ export const CATEGORIES = [
     name: "Mens Wear",
     url: "/mens-wear",
     subcategories: [
-      { name: "Mens Kurta Pajama", url: "/mens-kurta-pajama-wholesale-surat" },
+      { name: "Mens Kurta Pajama", url: "/mens-kurta-pajama-wholesale-ahmedabad" },
       { name: "Shirt", url: "/shirt" },
       { name: "Mens Formal Trousers", url: "/mens-formal-trousers" },
       { name: "Mens T Shirt", url: "/mens-t-shirt" },
@@ -159,7 +159,7 @@ export const CATEGORIES = [
   {
     id: "ladies-purse",
     name: "Ladies Purse",
-    url: "/ladies-purse-wholesale-market-in-surat",
+    url: "/ladies-purse-wholesale-market-in-ahmedabad",
     subcategories: []
   },
   {

@@ -90,7 +90,7 @@ export default function ProductDetailModal({
               className="max-h-80 object-contain rounded"
             />
             <div className="mt-3 text-center text-xs text-gray-500 font-medium">
-              100% Original Manufacturer Catalog from Surat Market
+              100% Original Manufacturer Catalog from Ahmedabad Market
             </div>
           </div>
 

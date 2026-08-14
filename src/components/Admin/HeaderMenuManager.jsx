@@ -994,7 +994,7 @@ export default function HeaderMenuManager({
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex flex-wrap gap-2 items-center">
             <input
               type="text"
-              placeholder="New Brand Name (e.g. Surat Fashion, Bella Silk)"
+              placeholder="New Item Name (e.g. Ahmedabad Fashion, Bella Silk)"
               value={newBrandName}
               onChange={(e) => setNewBrandName(e.target.value)}
               className="flex-1 min-w-[200px] border border-gray-300 bg-white rounded-lg px-3 py-2 text-xs font-semibold outline-none focus:border-blue-600"

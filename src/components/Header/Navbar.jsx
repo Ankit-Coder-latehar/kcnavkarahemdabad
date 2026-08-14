@@ -41,6 +41,45 @@ export default function Navbar({
             </button>
           </li>
 
+          {/* Catalog Dropdown (First) */}
+          <li
+            className="relative group"
+            onMouseEnter={() => setActiveHoverCategory('brands')}
+            onMouseLeave={() => setActiveHoverCategory(null)}
+          >
+            <button className="flex items-center gap-1 px-3.5 py-3.5 hover:text-[#b10607] uppercase transition border-b-2 border-transparent">
+              <span>Catalog</span>
+              <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+            </button>
+
+            {activeHoverCategory === 'brands' && (
+              <div className="absolute left-0 top-full w-72 bg-white border border-gray-200 shadow-xl rounded-b-md p-3 z-50">
+                <input
+                  type="text"
+                  placeholder="Search catalog..."
+                  value={brandSearch}
+                  onChange={(e) => setBrandSearch(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm mb-2 outline-none focus:border-[#b10607]"
+                />
+                <div className="max-h-60 overflow-y-auto">
+                  {filteredBrands.map((brand, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        onSelectCategory(brand);
+                        setActiveHoverCategory(null);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#b10607] transition flex items-center gap-2"
+                    >
+                      <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                      <span>{brand}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </li>
+
           {/* Categories List with Hover Mega-Menu */}
           {navCategories.map((cat) => (
             <li
@@ -83,45 +122,6 @@ export default function Navbar({
               )}
             </li>
           ))}
-
-          {/* Catalog Dropdown */}
-          <li
-            className="relative group"
-            onMouseEnter={() => setActiveHoverCategory('brands')}
-            onMouseLeave={() => setActiveHoverCategory(null)}
-          >
-            <button className="flex items-center gap-1 px-3.5 py-3.5 hover:text-[#b10607] uppercase transition border-b-2 border-transparent">
-              <span>Catalog</span>
-              <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
-            </button>
-
-            {activeHoverCategory === 'brands' && (
-              <div className="absolute left-0 top-full w-72 bg-white border border-gray-200 shadow-xl rounded-b-md p-3 z-50">
-                <input
-                  type="text"
-                  placeholder="Search catalog..."
-                  value={brandSearch}
-                  onChange={(e) => setBrandSearch(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm mb-2 outline-none focus:border-[#b10607]"
-                />
-                <div className="max-h-60 overflow-y-auto">
-                  {filteredBrands.map((brand, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        onSelectCategory(brand);
-                        setActiveHoverCategory(null);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#b10607] transition flex items-center gap-2"
-                    >
-                      <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                      <span>{brand}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </li>
         </ul>
       </div>
 
@@ -155,6 +155,37 @@ export default function Navbar({
               >
                 Home
               </button>
+
+              {/* Mobile Catalog Dropdown (First) */}
+              <div className="py-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[#36454F] uppercase font-semibold">Catalog</span>
+                  <button
+                    onClick={() =>
+                      setMobileExpandedCat(mobileExpandedCat === 'catalog' ? null : 'catalog')
+                    }
+                    className="px-2 py-1 text-gray-500 font-bold"
+                  >
+                    {mobileExpandedCat === 'catalog' ? '-' : '+'}
+                  </button>
+                </div>
+                {mobileExpandedCat === 'catalog' && (
+                  <div className="ml-3 mt-1.5 border-l-2 border-gray-200 pl-2 space-y-1 max-h-48 overflow-y-auto">
+                    {navBrands.map((brand, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          onSelectCategory(brand);
+                          onToggleMobileNav();
+                        }}
+                        className="block w-full text-left py-1 text-gray-600 hover:text-[#b10607] text-[11px]"
+                      >
+                        {brand}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {navCategories.map((cat) => (
                 <div key={cat.id} className="py-2">
@@ -198,37 +229,6 @@ export default function Navbar({
                   )}
                 </div>
               ))}
-
-              {/* Mobile Catalog Dropdown */}
-              <div className="py-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[#36454F] uppercase font-semibold">Catalog</span>
-                  <button
-                    onClick={() =>
-                      setMobileExpandedCat(mobileExpandedCat === 'catalog' ? null : 'catalog')
-                    }
-                    className="px-2 py-1 text-gray-500 font-bold"
-                  >
-                    {mobileExpandedCat === 'catalog' ? '-' : '+'}
-                  </button>
-                </div>
-                {mobileExpandedCat === 'catalog' && (
-                  <div className="ml-3 mt-1.5 border-l-2 border-gray-200 pl-2 space-y-1 max-h-48 overflow-y-auto">
-                    {navBrands.map((brand, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          onSelectCategory(brand);
-                          onToggleMobileNav();
-                        }}
-                        className="block w-full text-left py-1 text-gray-600 hover:text-[#b10607] text-[11px]"
-                      >
-                        {brand}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </div>

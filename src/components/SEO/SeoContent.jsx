@@ -18,7 +18,7 @@ export default function SeoContent() {
       a: "Absolutely! We export ladies kurtis and textile garments worldwide to USA, UK, Canada, Australia, UAE, Malaysia, Nepal, and over 50+ countries with DHL/FedEx priority shipping."
     },
     {
-      q: "Are all products manufactured directly in Surat textile market?",
+      q: "Are all products manufactured directly in Ahmedabad textile market?",
       a: "Yes, KC Navkar is located at Shop no. 20 Ground Floor, Sharanam estate - 4, opp. Ashima mill, near anupam cinema road, Khokra, Ahmedabad, Gujrat - 380021. We source directly from premier brand manufacturers to give you guaranteed lowest wholesale prices."
     }
   ];
@@ -33,10 +33,10 @@ export default function SeoContent() {
             Wholesale Kurtis Online at KCNavkar.com
           </h1>
           <p className="mb-2">
-            KC Navkar is one of the finest and most reliable readymade garments outsourcing companies in India. We have a vast variety of wholesale clothes available for sale online to boutique owners, retailers, and global distributors. Setting up your seller profile and finding authentic Surat manufacturer quality at lucrative prices is effortless with KC Navkar.
+            KC Navkar is one of the finest and most reliable readymade garments outsourcing companies in India. We have a vast variety of wholesale clothes available for sale online to boutique owners, retailers, and global distributors. Setting up your seller profile and finding authentic Ahmedabad manufacturer quality at lucrative prices is effortless with KC Navkar.
           </p>
           <p>
-            We eliminate offline market wanderings by bringing Surat’s renowned textile market directly to your screen. Our specialized catalog team curates top designer Kurtis, Anarkalis, Jaipuri prints, and daily-wear Kurtis with persistent follow-ups across manufacturers to ensure maximum profit margin for your business.
+            We eliminate offline market wanderings by bringing Ahmedabad’s renowned textile market directly to your screen. Our specialized catalog team curates top designer Kurtis, Anarkalis, Jaipuri prints, and daily-wear Kurtis with persistent follow-ups across manufacturers to ensure maximum profit margin for your business.
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export default function SeoContent() {
             <Percent className="w-6 h-6 text-[#b10607] shrink-0 mt-0.5" />
             <div>
               <h3 className="font-extrabold text-gray-900 text-sm mb-1">Lowest Price Guarantee</h3>
-              <p className="text-gray-600 text-xs">Direct Surat factory pricing with up to 50%+ profit margin for retailers.</p>
+              <p className="text-gray-600 text-xs">Direct Ahmedabad factory pricing with up to 50%+ profit margin for retailers.</p>
             </div>
           </div>
           <div className="bg-gray-50 border border-gray-200 rounded p-4 flex items-start gap-3">

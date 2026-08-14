@@ -12,7 +12,7 @@ export default function Footer({ onSelectCategory }) {
             KC <span className="text-[#b10607]">NAVKAR</span>
           </div>
           <p className="text-gray-400 leading-relaxed mb-4 text-sm">
-            kcnavkar.com is Surat's premier online B2B textile market for wholesale ladies Kurtis, Sarees, Lehengas, Salwar Kameez, and Dress Materials directly from brand manufacturers.
+            kcnavkar.com is Ahmedabad's premier online B2B textile market for wholesale ladies Kurtis, Sarees, Lehengas, Salwar Kameez, and Dress Materials directly from brand manufacturers.
           </p>
           <div className="flex items-center gap-3">
             <a href="https://www.facebook.com/share/17GPfdstD8/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center text-white hover:bg-[#b10607] transition" aria-label="Facebook">
@@ -49,10 +49,10 @@ export default function Footer({ onSelectCategory }) {
             Top Categories
           </h4>
           <ul className="space-y-2 text-gray-400 text-sm">
-            <li><button onClick={() => onSelectCategory('Kurti')} className="hover:text-white transition">Wholesale Kurtis Surat</button></li>
+            <li><button onClick={() => onSelectCategory('Kurti')} className="hover:text-white transition">Wholesale Kurtis Ahmedabad</button></li>
             <li><button onClick={() => onSelectCategory('Cotton Kurtis')} className="hover:text-white transition">Cotton Kurtis</button></li>
             <li><button onClick={() => onSelectCategory('Anarkali Kurtis')} className="hover:text-white transition">Anarkali Suits</button></li>
-            <li><button onClick={() => onSelectCategory('Surat Wholesale Sarees')} className="hover:text-white transition">Surat Wholesale Sarees</button></li>
+            <li><button onClick={() => onSelectCategory('Sarees')} className="hover:text-white transition">Ahmedabad Wholesale Sarees</button></li>
             <li><button onClick={() => onSelectCategory('Salwar Kameez')} className="hover:text-white transition">Pakistani Salwar Kameez</button></li>
             <li><button onClick={() => onSelectCategory('Co Ord Set')} className="hover:text-white transition">Trendy Co-Ord Sets</button></li>
           </ul>

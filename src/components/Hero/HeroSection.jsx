@@ -23,7 +23,7 @@ export default function HeroSection({ onSelectCategory, onOpenSubscribe }) {
       id: 2,
       title: "LATEST 2026 CATALOGS",
       subtitle: "Wholesale Cotton Kurtis, Anarkali & Co-Ord Sets",
-      tagline: "100% Quality Assured Fabrics Direct From Ahmedabad & Surat Garment Hub",
+      tagline: "100% Quality Assured Fabrics Direct From Ahmedabad Garment Hub",
       badge: "Express Worldwide Shipping",
       bgGradient: "from-gray-900 via-[#1f242e] to-[#0f172a]",
       textColor: "text-red-400",
@@ -40,7 +40,7 @@ export default function HeroSection({ onSelectCategory, onOpenSubscribe }) {
       bgGradient: "from-[#1c1917] via-[#451a03] to-[#78350f]",
       textColor: "text-amber-400",
       accentBg: "bg-amber-500 text-gray-950",
-      categoryLink: "Surat Wholesale Sarees",
+      categoryLink: "Ahmedabad Wholesale Sarees",
       imgUrl: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1200&q=80",
     }
   ];
