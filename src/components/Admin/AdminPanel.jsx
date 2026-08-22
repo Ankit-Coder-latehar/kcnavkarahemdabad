@@ -675,7 +675,7 @@ export default function AdminPanel({
                             </button>
                             <button
                               onClick={() => {
-                                if (confirm(`Are you sure you want to delete "${prod.title}"?`)) {
+                                if (window.confirm(`Are you sure you want to delete "${prod.title}"?`)) {
                                   onDeleteProduct(prod.id);
                                 }
                               }}

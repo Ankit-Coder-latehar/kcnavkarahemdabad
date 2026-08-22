@@ -49,6 +49,7 @@ export default function App() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const defaultMap = new Map(PRODUCTS.map((p) => [p.id, p]));
           const existingIds = new Set(parsed.map((p) => p.id));
+          const deletedIds = new Set(JSON.parse(localStorage.getItem('kcnavkar_deleted_products') || '[]'));
 
           // Merge: default fields first, then cached overrides on top
           // - `...defaults` ensures new fields added to products.js appear for all products
@@ -64,8 +65,8 @@ export default function App() {
             };
           });
 
-          // Add any brand-new default products not yet in localStorage
-          const missingDefaults = PRODUCTS.filter((p) => !existingIds.has(p.id));
+          // Add any brand-new default products not yet in localStorage (excluding deleted ones)
+          const missingDefaults = PRODUCTS.filter((p) => !existingIds.has(p.id) && !deletedIds.has(p.id));
           const final = [...missingDefaults, ...merged];
 
           localStorage.setItem('kcnavkar_products', JSON.stringify(final));
@@ -203,12 +204,24 @@ export default function App() {
     if (activeProductModal && activeProductModal.id === productId) {
       setActiveProductModal(null);
     }
+    
+    // Track deleted product so it doesn't reappear on reload
+    try {
+      const deletedIds = JSON.parse(localStorage.getItem('kcnavkar_deleted_products') || '[]');
+      if (!deletedIds.includes(productId)) {
+        deletedIds.push(productId);
+        localStorage.setItem('kcnavkar_deleted_products', JSON.stringify(deletedIds));
+      }
+    } catch (e) {
+      console.error('Failed to update deleted products in localStorage', e);
+    }
   };
 
   const handleResetProducts = () => {
-    if (confirm('Are you sure you want to reset all products back to default initial items?')) {
+    if (window.confirm('Are you sure you want to reset all products back to default initial items?')) {
       setProductsList(PRODUCTS);
       localStorage.removeItem('kcnavkar_products');
+      localStorage.removeItem('kcnavkar_deleted_products');
       alert('Product catalog reset to default items successfully!');
     }
   };
